@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:stock="http://www.mulesoft.org/schema/mule/stock" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/stock http://www.mulesoft.org/schema/mule/stock/current/mule-stock.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <stock:config name="Stock__Configuration" doc:name="Stock: Configuration"/>
+    <flow name="stockhistoryFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/stockhistory" doc:name="HTTP" allowedMethods="GET"/>
+        <stock:get-history config-ref="Stock__Configuration" startDate="#[message.inboundProperties.'http.query.params'.startdate]" symbols="#[message.inboundProperties.'http.query.params'.symbol]" doc:name="Stock"/>
+    </flow>
+    <flow name="stockquoteFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/stockquote" doc:name="HTTP" allowedMethods="GET"/>
+        <stock:get-quote config-ref="Stock__Configuration"  symbols="#[message.inboundProperties.'http.query.params'.symbols]" doc:name="Stock"/>
+    </flow>
+</mule>
